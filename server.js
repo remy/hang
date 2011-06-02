@@ -1,13 +1,15 @@
 var url = require('url'),
-    querystring = require('querystring');
-        
+    querystring = require('querystring'),
+    api = [
+      ' http://hang.nodester.com/file.type?[time in ms]'
+    ].join('\n');
+
 require('http').createServer(function (req, res) {
   var parsedURL = url.parse(req.url),
       query = querystring.parse(parsedURL.query),
       time = query.time || parsedURL.query,
       type = parsedURL.pathname.replace(/^.*\.(.*?$)/, '$1');
       
-  console.log(types[type], time);
   if (types[type]) {
     res.writeHead(200, { 'content-type' : types[type] });
   } else {
@@ -16,10 +18,10 @@ require('http').createServer(function (req, res) {
   
   if (time) {
     setTimeout(function () {
-      res.end('/* ' + time + 'ms */');
-    }, parseInt(time));
+      res.end('/*\n ' + time + 'ms\n' + api + '\n*/');
+    }, parseInt(time, 10));
   } else {
-    res.end('/* zero hang time */');
+    res.end('/*\n zero hang time\n' + api + '\n*/');
   }
 }).listen(8888);
 
