@@ -9,13 +9,9 @@ require('http').createServer(function (req, res) {
       query = querystring.parse(parsedURL.query),
       time = query.time || parsedURL.query,
       type = parsedURL.pathname.replace(/^.*\.(.*?$)/, '$1');
-      
-  if (types[type]) {
-    res.writeHead(200, { 'content-type' : types[type] });
-  } else {
-    res.writeHead(200, { 'content-type' : 'text/html' });
-  }
-  
+
+  res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
+
   if (time) {
     setTimeout(function () {
       res.end('/*\n ' + time + 'ms\n' + api + '\n*/');
@@ -23,7 +19,7 @@ require('http').createServer(function (req, res) {
   } else {
     res.end('/*\n zero hang time\n' + api + '\n*/');
   }
-}).listen(process.env['app_port']);
+}).listen(process.env['app_port'] || 8080);
 
 var types = {
   'aiff': 'audio/x-aiff',
