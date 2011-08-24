@@ -9,13 +9,9 @@ require('http').createServer(function (req, res) {
       query = querystring.parse(parsedURL.query),
       time = query.time || parsedURL.query,
       type = parsedURL.pathname.replace(/^.*\.(.*?$)/, '$1');
-      
-  if (types[type]) {
-    res.writeHead(200, { 'content-type' : types[type] });
-  } else {
-    res.writeHead(200, { 'content-type' : 'text/html' });
-  }
-  
+
+  res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
+
   if (time) {
     setTimeout(function () {
       res.end('/*\n ' + time + 'ms\n' + api + '\n*/');
