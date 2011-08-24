@@ -19,7 +19,7 @@ require('http').createServer(function (req, res) {
   } else {
     res.end('/*\n zero hang time\n' + api + '\n*/');
   }
-}).listen(process.env['app_port']);
+}).listen(process.env['app_port'] || 8080);
 
 var types = {
   'aiff': 'audio/x-aiff',
