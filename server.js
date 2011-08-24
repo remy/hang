@@ -1,29 +1,39 @@
 var url = require('url'),
     querystring = require('querystring'),
     api = [
-      ' http://hang.nodester.com/file.type?[time in ms]'
-    ].join('\n');
+      ' http://hang.nodester.com/file.type?[time in ms]&content=[optional content]'
+    ].join('\n'),
+    commentTypes = {
+      'js': ['/*\n ', '\n*/'],
+      // no comments in JSON :(
+      'css': ['/*\n ', '\n*/'],
+      'html': ['<pre>\n ', '\n<pre>']
+    };
 
 require('http').createServer(function (req, res) {
   var parsedURL = url.parse(req.url),
+      pathname = parsedURL.pathname,
       query = querystring.parse(parsedURL.query),
       time = query.time || parsedURL.query,
-      type = parsedURL.pathname.replace(/^.*\.(.*?$)/, '$1');
-      
-  if (types[type]) {
-    res.writeHead(200, { 'content-type' : types[type] });
-  } else {
-    res.writeHead(200, { 'content-type' : 'text/html' });
+      type = pathname.indexOf('.') !== -1 ? pathname.replace(/^.*\.(.*?$)/, '$1') : 'html',
+      commentTags = commentTypes[type] || null,
+      comment = time ? time + 'ms\n' + api : 'zero hang time\n' + api,
+      content = query.content || '';
+
+  if (content === '' && commentTags !== null) {
+    content = commentTags[0] + comment + commentTags[1];
   }
-  
+
+  res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
+
   if (time) {
     setTimeout(function () {
-      res.end('/*\n ' + time + 'ms\n' + api + '\n*/');
+      res.end(content);
     }, parseInt(time, 10));
   } else {
-    res.end('/*\n zero hang time\n' + api + '\n*/');
+    res.end(content);
   }
-}).listen(process.env['app_port']);
+}).listen(process.env['app_port'] || 8080);
 
 var types = {
   'aiff': 'audio/x-aiff',
