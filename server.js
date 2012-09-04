@@ -1,7 +1,8 @@
 var url = require('url'),
     querystring = require('querystring'),
+    fill = '@rem',
     api = [
-      ' http://hang.nodester.com/file.type?[time in ms]&content=[optional content]'
+      ' http://hang.nodester.com/file.type?[time in ms]&content=[optional content]&bytes=[optional bytes]'
     ].join('\n'),
     commentTypes = {
       'js': ['/*\n ', '\n*/'],
@@ -18,10 +19,17 @@ require('http').createServer(function (req, res) {
       type = pathname.indexOf('.') !== -1 ? pathname.replace(/^.*\.(.*?$)/, '$1') : 'html',
       commentTags = commentTypes[type] || null,
       comment = time ? time + 'ms\n' + api : 'zero hang time\n' + api,
-      content = query.content || '';
+      content = query.content || '',
+      bytes = query.bytes || '';
 
   if (content === '' && commentTags !== null) {
-    content = commentTags[0] + comment + commentTags[1];
+    if (bytes === '') {
+      content = commentTags[0] + comment + commentTags[1];
+    } else {
+      bytes = (query.bytes < 100000) ? parseInt(query.bytes, 10) : 100000;
+      var fillString = Array(Math.floor(bytes/fill.length)+1).join(fill) + fill.substring(0, (bytes % fill.length));
+      content = commentTags[0] + fillString + commentTags[1];
+    }
   }
 
   res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
