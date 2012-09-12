@@ -16,27 +16,35 @@ require('http').createServer(function (req, res) {
       pathname = parsedURL.pathname,
       query = querystring.parse(parsedURL.query),
       time = query.time || parsedURL.query,
+      redirect = query.redirect,
       type = pathname.indexOf('.') !== -1 ? pathname.replace(/^.*\.(.*?$)/, '$1') : 'html',
       commentTags = commentTypes[type] || null,
       comment = time ? time + 'ms\n' + api : 'zero hang time\n' + api,
       content = query.content || '',
       bytes = query.bytes || '';
 
-  if (content === '' && commentTags !== null) {
-    if (bytes === '') {
-      content = commentTags[0] + comment + commentTags[1];
-    } else {
-      bytes = (query.bytes < 100000) ? parseInt(query.bytes, 10) : 100000;
-      var fillString = Array(Math.floor(bytes/fill.length)+1).join(fill) + fill.substring(0, (bytes % fill.length));
-      content = commentTags[0] + fillString + commentTags[1];
+  if (!redirect) {
+    if (content === '' && commentTags !== null) {
+      if (bytes === '') {
+        content = commentTags[0] + comment + commentTags[1];
+      } else {
+        bytes = (query.bytes < 100000) ? parseInt(query.bytes, 10) : 100000;
+        var fillString = Array(Math.floor(bytes/fill.length)+1).join(fill) + fill.substring(0, (bytes % fill.length));
+        content = commentTags[0] + fillString + commentTags[1];
+      }
     }
-  }
 
-  res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
+    res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
+  }
 
   if (time) {
     setTimeout(function () {
-      res.end(content);
+      if (redirect) {
+        res.writeHead(302, { 'Location' : redirect });
+        res.end();
+      } else {
+        res.end(content);
+      }
     }, parseInt(time, 10));
   } else {
     res.end(content);
