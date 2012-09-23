@@ -2,7 +2,7 @@ var url = require('url'),
     querystring = require('querystring'),
     fill = '@rem',
     api = [
-      ' http://hang.nodester.com/file.type?[time in ms]&content=[optional content]&bytes=[optional bytes]'
+      ' http://hang.nodester.com/file.type?[time in ms]&content=[optional content]&bytes=[optional bytes]&redirect=[optional 302 redirect]'
     ].join('\n'),
     commentTypes = {
       'js': ['/*\n ', '\n*/'],
