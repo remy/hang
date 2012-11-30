@@ -34,7 +34,7 @@ require('http').createServer(function (req, res) {
       }
     }
 
-    res.writeHead(200, { 'content-type' : types[type] || 'text/html' });
+    res.writeHead(200, { 'content-type' : types[type] || 'text/html', 'Access-Control-Allow-Origin' : '*' });
   }
 
   if (time) {
