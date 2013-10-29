@@ -2,7 +2,7 @@ var url = require('url'),
     querystring = require('querystring'),
     fill = '@rem',
     api = [
-      ' http://hang.nodester.com/file.type?[time in ms]&content=[optional content]&bytes=[optional bytes]&redirect=[optional 302 redirect]'
+      ' http://hang.leftlogic.com/file.type?[time in ms]&content=[optional content]&bytes=[optional bytes]&redirect=[optional 302 redirect]'
     ].join('\n'),
     commentTypes = {
       'js': ['/*\n ', '\n*/'],
@@ -49,7 +49,7 @@ require('http').createServer(function (req, res) {
   } else {
     res.end(content);
   }
-}).listen(process.env['app_port'] || 8080);
+}).listen(process.env.app_port || process.env.PORT || 8080);
 
 var types = {
   'aiff': 'audio/x-aiff',
